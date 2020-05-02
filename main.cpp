@@ -1,6 +1,7 @@
 #include <QApplication>
 #include "window.h"
 #include "basic_matrix_tools.h"
+#include "linear_map_2d.h"
 
 func2d Window::func = f;
 
@@ -8,7 +9,7 @@ int main (int argc, char *argv[])
 {
   int n = 8, m = 8;
   std::pair<float, float> C = {1., 1.};
-  float w = 0.7, h = 0.7;
+  float w = 0.7, h = 0.3;
   int thread_num = 1;
   char usage_hint[1024];
   sprintf (usage_hint, "Usage: %s <n> <m> <w> <h> <C.x> <C.y> <p>\n", argv[0]);
@@ -40,9 +41,10 @@ int main (int argc, char *argv[])
   ///----------------------------------------///
 
   double x1 = 0, y1 = 0;
-  double x2 = w, y2 = 0;
-  double x3 = C.first, y3 = C.second;
-  double x4 = 0, y4 = h;
+  double x2 = w, y2 = 0.3;
+//  double x3 = C.first, y3 = C.second;
+  double x3 = 1, y3 = 1;
+  double x4 = 0.3, y4 = w;
   double Mat [9] = {0., 0., 0.,
                     0., 0., 0.,
                     0., 0., 0.};
@@ -54,12 +56,12 @@ int main (int argc, char *argv[])
   r1 = std::max (fabs (x2), fabs (x3));
   r2 = std::max (fabs (y3), fabs (y4));
   build_homography_to_rect (x1, y1, x2, y2, x3, y3, x4, y4, Jacobi, r1, r2);
-  //build_homography_from_quad (x1, y1, x2, y2, x3, y3, x4, y4, Mat);
+//  build_homography_from_quad (x1, y1, x2, y2, x3, y3, x4, y4, Mat);
 
   //print_mtx_3x3 (Mat);
   mtx_reverse (Jacobi, Mat, 3);
   build_homography_to_rect (x1, y1, x2, y2, x3, y3, x4, y4, Jacobi, r1, r2);
-  //build_homography_from_quad (x1, y1, x2, y2, x3, y3, x4, y4, Mat);
+//  build_homography_from_quad (x1, y1, x2, y2, x3, y3, x4, y4, Mat);
 
   print_mtx_3x3 (Jacobi);
 

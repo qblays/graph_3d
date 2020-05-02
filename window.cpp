@@ -368,7 +368,7 @@ void Window::rebase ()
     {
       widget->swap_surfaces ();
     }
-  widget->updateGL ();
+  widget->update ();
   is_busy = false;
 }
 

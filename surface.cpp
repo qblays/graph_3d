@@ -7,7 +7,7 @@
 #include "geometry_data.h"
 #include "basic_matrix_tools.h"
 
-#define RESOLUTION 100
+#define RESOLUTION 150
 
 static inline int get_triangle_pos_in_buf_by_i_j (grid_data &grid, int i, int j)
 {
@@ -173,10 +173,10 @@ surface::~surface ()
     delete m_geom_ptr;
 }
 
-void surface::draw ()
+void surface::draw (bool is_resid)
 {
   if (m_geom_ptr)
-    m_geom_ptr->draw ();
+    m_geom_ptr->draw (is_resid);
 }
 
 

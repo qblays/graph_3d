@@ -2,17 +2,20 @@
 #define GLWIDGET_H
 
 #include <QWidget>
-#include <QGLWidget>
+//#include <QGLWidget>
 #include <QMatrix4x4>
 #include <QVector2D>
 #include <QPointF>
 #include <cstdlib>
 #include <memory>
+//#include <QOpenGLWindow>
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions>
 
 class grid_data;
 class surface;
 
-class glwidget: public QGLWidget
+class glwidget: public QOpenGLWidget, protected QOpenGLFunctions
 {
   Q_OBJECT
 
@@ -43,8 +46,8 @@ protected:
   void wheelEvent (QWheelEvent* pe);
 
 public slots:
-  void setXRotation (int angle);
-  void setYRotation (int angle);
+  void setXRotation (double angle);
+  void setYRotation (double angle);
   void setZRotation (int angle);
   void change_curr_to_func ();
   void change_curr_to_resid ();
@@ -52,14 +55,15 @@ public slots:
 private:
   void draw_axis ();
   void set_gl_ortho ();
+  void set_gl_ortho (double near, double far);
 
-  int m_xRot;
-  int m_yRot;
+  float m_xRot;
+  float m_yRot;
   int m_zRot;
 
   STATE m_state = FUNC;
 
-  float m_scaleCoef;
+  double m_scaleCoef;
   QPoint m_mousePosition;
 
   QVector<GLuint> m_faces;

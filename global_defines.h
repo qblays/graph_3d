@@ -14,8 +14,9 @@ typedef std::function<double (double, double)> func2d;
 /// function for approximation ///
 static inline double f (double x, double y)
 {
-  return y;
-  return x*x + y*y;
+//  return 1;
+//  return y;
+//  return x*x + y*y;
   return exp((x - 0.5)*(x - 0.5) - (y - 0.5)*(y - 0.5));
 }
 #define FUNC_TO_STRING_FOR_GUI "z = x*x + y*y"

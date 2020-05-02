@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    linear_map_2d.cpp \
     main.cpp \
     window.cpp \
     glwidget.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
     basic_matrix_tools.cpp
 
 HEADERS += \
+    linear_map_2d.h \
     window.h \
     glwidget.h \
     surface.h \
@@ -37,7 +39,7 @@ HEADERS += \
     sparse_tools.h \
     basic_matrix_tools.h
 
-QMAKE_CXXFLAGS += -std=c++11 -pthread --fast-math
+QMAKE_CXXFLAGS += -std=c++11 -pthread --fast-math -g
 LIBS += -pthread
 
 QT += opengl

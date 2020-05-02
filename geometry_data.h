@@ -9,7 +9,7 @@ class QVector3D;
 class geometry_data
 {
 public:
-  void draw () const;
+  void draw (bool is_resid) const;
   void add_triangle (const QVector3D &a, const QVector3D &b, const QVector3D &c);
   QVector3D *point_at (int pos);
   QVector3D *normal_at (int pos);

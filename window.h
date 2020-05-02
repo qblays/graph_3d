@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <QMainWindow>
+#include <QOpenGLWindow>
 
 #include "global_defines.h"
 
@@ -39,6 +40,7 @@ public:
 
 private:
   //interface
+
   glwidget *widget;
   QPushButton *incr_button;
   QPushButton *decr_button;

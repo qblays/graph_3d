@@ -45,7 +45,7 @@ public:
 
   void update_ij (int i, int j, QVector4D &vals);
 
-  void draw ();
+  void draw (bool is_resid);
 
 private:
   geometry_data *m_geom_ptr;
