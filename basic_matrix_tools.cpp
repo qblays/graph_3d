@@ -1,10 +1,11 @@
 #include "basic_matrix_tools.h"
-#include <cmath>
-#include <cstdio>
 #include <QPointF>
 #include <algorithm>
+#include <cmath>
+#include <cstdio>
 
-static inline void add_str (double *a, int n, int j, int i, int l, double p)
+static inline void
+add_str (double *a, int n, int j, int i, int l, double p)
 {
   int s;
   for (s = l; s + 9 < n; s += 9)
@@ -23,11 +24,10 @@ static inline void add_str (double *a, int n, int j, int i, int l, double p)
     a[j * n + k] += p * a[i * n + k];
 }
 
-void build_homography_from_quad (double x1, double y1,
-                                 double x2, double y2,
-                                 double x3, double y3,
-                                 double x4, double y4,
-                                 double *Mat)
+void
+build_homography_from_quad (double x1, double y1, double x2, double y2,
+                            double x3, double y3, double x4, double y4,
+                            double *Mat)
 {
   Mat[2] = (y4 - y3) * (x1 + x3 - x2 - x4) - (x4 - x3) * (y1 + y3 - y2 - y4);
   Mat[2] /= (y4 - y3) * (x2 - x3) - (x4 - x3) * (y2 - y3);
@@ -42,17 +42,15 @@ void build_homography_from_quad (double x1, double y1,
   Mat[7] = y1;
 }
 
-void build_homography_to_rect (double x1, double y1,
-                               double x2, double y2,
-                               double x3, double y3,
-                               double x4, double y4,
-                               double *Mat,
-                               double r1, double r2)
+void
+build_homography_to_rect (double x1, double y1, double x2, double y2, double x3,
+                          double y3, double x4, double y4, double *Mat,
+                          double r1, double r2)
 {
-  (void) x1;
-  (void) y1;
-  (void) y2;
-  (void) x4;
+  (void)x1;
+  (void)y1;
+  (void)y2;
+  (void)x4;
   Mat[2] = y3 - y4;
   Mat[2] /= x3 * y4;
   Mat[5] = x3 - x2;
@@ -66,7 +64,8 @@ void build_homography_to_rect (double x1, double y1,
   Mat[7] = 0.;
 }
 
-int mtx_reverse (double *mtx, double *buf, int n, double eps)
+int
+mtx_reverse (double *mtx, double *buf, int n, double eps)
 {
   double x = 0.;
   for (int i = 0; i < n; i++)
@@ -130,7 +129,8 @@ int mtx_reverse (double *mtx, double *buf, int n, double eps)
   return 0;
 }
 
-double det_3x3 (double *Mat)
+double
+det_3x3 (double *Mat)
 {
   double det = 0.;
   det += Mat[0] * Mat[4] * Mat[8];
@@ -142,23 +142,42 @@ double det_3x3 (double *Mat)
   return det;
 }
 
-void translate_tetragon (double x, double y, double &new_x, double &new_y, double *Mat)
+void
+translate_tetragon (double x, double y, double &new_x, double &new_y,
+                    double *Mat)
 {
   double div = Mat[2] * x + Mat[5] * y + Mat[8];
   new_x = (Mat[0] * x + Mat[3] * y + Mat[6]) / div;
   new_y = (Mat[1] * x + Mat[4] * y + Mat[7]) / div;
 }
 
-void translate_tetragon (QPointF &p, QPointF &new_p, double *Mat)
+void
+translate_tetragon (double x, double y, double &new_x, double &new_y,
+                    Linear_map_2d &map)
 {
-  double x = p.x(), y = p.y();
+  new_x = map (x, y)[0];
+  new_y = map (x, y)[1];
+}
+
+void
+translate_tetragon (QPointF &p, QPointF &new_p, double *Mat)
+{
+  double x = p.x (), y = p.y ();
 
   double div = Mat[2] * x + Mat[5] * y + Mat[8];
   new_p.setX ((Mat[0] * x + Mat[3] * y + Mat[6]) / div);
   new_p.setY ((Mat[1] * x + Mat[4] * y + Mat[7]) / div);
 }
 
-void print_mtx_3x3 (double *Mat)
+void
+translate_tetragon (QPointF &p, QPointF &new_p, Linear_map_2d &map)
+{
+  new_p.setX (map (p.x (), p.y ())[0]);
+  new_p.setY (map (p.x (), p.y ())[1]);
+}
+
+void
+print_mtx_3x3 (double *Mat)
 {
   printf ("---------\n");
   printf ("%.3f %.3f %.3f\n", Mat[0], Mat[1], Mat[2]);

@@ -5,9 +5,9 @@
 #include <QPointF>
 #include <cmath>
 #include <utility>
-
+#include "linear_map_2d.h"
 #define MAIN_THREAD 0
-#define HOLE_SIZE 4
+#define HOLE_SIZE 5
 
 typedef std::function<double (double, double)> func2d;
 
@@ -29,15 +29,13 @@ public:
   int n_cut;
   int m_cut;
   QPointF u, v, C;
-  double *Jacobi; //tetragon --> square
-  double *revJacobi; //square --> tetragon
+  Linear_map_2d Jacobi; //tetragon --> square
+  Linear_map_2d revJacobi; //square --> tetragon
 
-  grid_data (int n_, int m_, float w = 1., float h = 1., std::pair<float, float> c_ = {2., 2.},
-             double *jacobi = 0, double *rev_jacobi = 0)
-    : u (w, 0), v (0., h), C (c_.first, c_.second)
+  grid_data (int n_, int m_, float w, float h, std::pair<float, float> c_,
+             Linear_map_2d jacobi, Linear_map_2d rev_jacobi)
+    : u (w, 0), v (0., h), C (c_.first, c_.second), Jacobi(jacobi), revJacobi(rev_jacobi)
   {
-    Jacobi = jacobi;
-    revJacobi = rev_jacobi;
     n = n_;
     m = m_;
     n_cut = n / 2;

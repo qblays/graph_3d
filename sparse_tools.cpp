@@ -41,8 +41,7 @@ static inline void vector_product (double v[], double u[], double r[])
 
 int get_links (int n, int m, int i, int j, int x[], int y[])
 {
-  if ((0 < j && j < m && 0 < i && i < n) ||
-      (0 < i && i < n && 0 < j && j < m))
+  if ((0 < j && j < m && 0 < i && i < n))
     {
       x[0] = i;     y[0] = j + 1;
       x[1] = i + 1; y[1] = j + 1;
@@ -112,7 +111,7 @@ int get_links (int n, int m, int i, int j, int x[], int y[])
       x[1] = i - 1; y[1] = j;
       return 2;
     }
-  fprintf (stderr, "FATAL ERROR in get_links\n");
+  fprintf (stderr, "error\n");
   abort();
   return -1000;
 }
@@ -144,7 +143,7 @@ int get_num_links (int n, int m, int i, int j)
   if ((0 < j && j < m && 0 < i && i < n) ||
       (0 < i && i < n && 0 < j && j < m))
     return 6;
-  fprintf (stderr, "FATAL ERROR IN get_num_links\n");
+  fprintf (stderr, "error\n");
   abort ();
   return -1000;
 }

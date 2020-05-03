@@ -3,10 +3,12 @@
 #include <array>
 class Linear_map_2d
 {
-  double matrix[4];
-  Linear_map_2d (double[4]);
+  std::array<double, 4> matrix;
+
 
 public:
+  Linear_map_2d (double[4]);
+  Linear_map_2d () = default;
   static Linear_map_2d
   parallelogram_to_quad (double a, double b);
   static Linear_map_2d

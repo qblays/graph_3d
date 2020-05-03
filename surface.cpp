@@ -24,9 +24,9 @@ static inline int get_triangle_pos_in_buf_by_i_j (grid_data &grid, int i, int j)
     }
   else if (i >= n - n / HOLE_SIZE)
     {
-      //pos = i * m + j - (n - 2 * n / HOLE_SIZE) * (m - 2 * m / HOLE_SIZE);
+//      pos = i * m + j - (n - 2 * n / HOLE_SIZE) * (m - 2 * m / HOLE_SIZE);
       pos = (i + 1 - (n - 2 * n / HOLE_SIZE)) * m + (n - 1 - 2 * n / HOLE_SIZE) * (1 + 2 * m / HOLE_SIZE) + j;
-      //pos = (i - (n - 2 * n / HOLE_SIZE)) * m + (n - 2 * n / HOLE_SIZE) * (2 * m / HOLE_SIZE) + j;
+//      pos = (i - (n - 2 * n / HOLE_SIZE)) * m + (n - 2 * n / HOLE_SIZE) * (2 * m / HOLE_SIZE) + j;
     }
   else
     {
