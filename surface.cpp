@@ -18,22 +18,22 @@ static inline int get_triangle_pos_in_buf_by_i_j (grid_data &grid, int i, int j)
   int pos = 0;
   int n = grid.n;
   int m = grid.m;
-  if (i <= n / HOLE_SIZE)
+  if (i <= I_MIN)
     {
       pos = i * m + j;
     }
-  else if (i >= n - n / HOLE_SIZE)
+  else if (i >= n - I_MIN)
     {
 //      pos = i * m + j - (n - 2 * n / HOLE_SIZE) * (m - 2 * m / HOLE_SIZE);
-      pos = (i + 1 - (n - 2 * n / HOLE_SIZE)) * m + (n - 1 - 2 * n / HOLE_SIZE) * (1 + 2 * m / HOLE_SIZE) + j;
+      pos = (i + 1 - (n - 2 * I_MIN)) * m + (n - 1 - 2 * I_MIN) * (1 + 2 * I_MIN) + j;
 //      pos = (i - (n - 2 * n / HOLE_SIZE)) * m + (n - 2 * n / HOLE_SIZE) * (2 * m / HOLE_SIZE) + j;
     }
   else
     {
       //pos = 0;
-      pos = (n / HOLE_SIZE + 1) * m + (1 + 2 * m / HOLE_SIZE) * (i - (1 + n / HOLE_SIZE)) + j;
-      if (j >= m - m / HOLE_SIZE)
-        pos -= (m - 1 - 2 * m / HOLE_SIZE);
+      pos = (I_MIN + 1) * m + (1 + 2 * I_MIN) * (i - (1 + I_MIN)) + j;
+      if (j >= m - I_MIN)
+        pos -= (m - 1 - 2 * I_MIN);
         //pos -= (-1 + 2 * m / HOLE_SIZE);
     }
   return pos * 6;
@@ -123,7 +123,7 @@ surface::surface (const grid_data &grid, func2d &f): m_grid (grid)
           f3 = (float) f (new_x, new_y);
 
           //
-          if (i > n / HOLE_SIZE && i < (n - n / HOLE_SIZE) && j > m / HOLE_SIZE && j < (m - m / HOLE_SIZE))
+          if (i > I_MIN && i < (n - I_MIN) && j > I_MIN && j < (m - I_MIN))
             {
               continue;
             }

@@ -8,6 +8,9 @@
 #include "linear_map_2d.h"
 #define MAIN_THREAD 0
 #define HOLE_SIZE 5
+#define I_MIN 1
+inline double I_shift = 0;
+inline double J_shift = 0;
 
 typedef std::function<double (double, double)> func2d;
 

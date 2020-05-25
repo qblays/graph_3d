@@ -8,7 +8,7 @@
 #include "sparse_tools.h"
 #include "basic_matrix_tools.h"
 
-#define EPS 1e-14
+#define EPS 1e-7
 #define MAXIT 100
 
 static inline void split_threads (int n, int p, int k, int &i1, int &i2)
@@ -67,7 +67,7 @@ void fill_surface_with_vals (surface *buf_surface, grid_data &grid_calc, int p, 
           //get_lin_func_value (new_x, new_y, n_calc, m_calc, n_cut_calc, m_cut_calc, vals, f3);
           //
           //
-          if (i > n / HOLE_SIZE && i < (n - n / HOLE_SIZE) && j > m / HOLE_SIZE && j < (m - m / HOLE_SIZE))
+          if (i > I_MIN && i < (n - I_MIN) && j > I_MIN && j < (m - I_MIN))
             {
               continue;
             }
@@ -90,7 +90,7 @@ void fill_surface_with_vals (surface *buf_surface, grid_data &grid_calc, int p, 
           translate_tetragon (x, y + dy, new_x, new_y, grid_calc.revJacobi);
           vec.setW (fabsf ((float) (f3 - (*func)(new_x, new_y))));
 
-          if (i > n / HOLE_SIZE && i < (n - n / HOLE_SIZE) && j > m / HOLE_SIZE && j < (m - m / HOLE_SIZE))
+          if (i > I_MIN && i < (n - I_MIN) && j > I_MIN && j < (m - I_MIN))
             {
               continue;
             }
@@ -133,20 +133,40 @@ void *thread_func (void *arg)
         {
           *error = create_matrix_structure (n, m, I);
         }
+      if (thread_id == MAIN_THREAD)
+        {
+          printf ("create matrix struct\n");
+        }
 
       reduce_sum (p, error, 1);
       if (*error >= 0)
         {
           *error = create_matrix_values (n, m, matrix_size, A, I, p, thread_id);
           reduce_sum (p, error, 1);
+          if (thread_id == MAIN_THREAD)
+            {
+              printf ("create matrix vals\n");
+            }
           if (*error >= 0)
             {
               create_rhs (n, m, matrix_size, *f, rhs, my_arg->grid, p, thread_id);
+              if (thread_id == MAIN_THREAD)
+                {
+                  printf ("rhs\n");
+                }
               *error = MSR_solve (A, I, matrix_size, x, rhs, r, u, v, EPS, MAXIT, p, thread_id);
+              if (thread_id == MAIN_THREAD)
+                {
+                  printf ("msr solve\n");
+                }
               if (*error >= 0)
                 {
                   fill_surface_with_vals (buf_surface, (my_arg->grid), p, thread_id, x);
                   fill_surface_with_vals (buf_surface_resid, (my_arg->grid), p, thread_id, x, f);
+                  if (thread_id == MAIN_THREAD)
+                    {
+                      printf (" fill with vals\n");
+                    }
                   double residual = MSR_residual (n, m, x, *f, *max, my_arg->grid, p, thread_id);
                   buf_surface_resid->set_max (float (residual));
                   buf_surface_resid->set_min (0.0f);
