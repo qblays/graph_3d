@@ -12,9 +12,9 @@
 inline int A = 2;
 inline int B = 6;
 inline double A_s = 0;
-inline double A_real = 0.2;
+inline double A_real = 0.25;
 inline double B_s = 0;
-inline double B_real = 0.8;
+inline double B_real = 0.75;
 
 typedef std::function<double (double, double)> func2d;
 
@@ -23,13 +23,18 @@ update_scretch (int n_surf)
 {
   double dx = 1. / n_surf;
   int count = A_real / dx;
-  A = count + 1;
+  A = count;
   A_s = A_real - count * dx;
   printf ("n = %d, A = %d, A_real = %lf, A_s = %lf, dx = %lf\n", n_surf, A, A_real,
           A_s, dx);
-  count = B_real / dx;
-  B = count;
-  B_s = B_real - (count) * dx;
+//  if (n_surf-A == A)
+//    A--;
+//  A--;
+
+
+  B = n_surf - A;
+  B_s = B_real - (B) * dx;
+  B_s *=-1;
 //    B_s = dx - B_s;
   printf ("n = %d, B = %d, B_real = %lf, B_s = %lf, dx = %lf\n", n_surf, B, B_real,
           B_s, dx);

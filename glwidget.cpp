@@ -154,6 +154,8 @@ glwidget::paintGL ()
 
   float max_z = std::max (fabsf (m_curr_surface->get_max ()),
                           fabsf (m_curr_surface->get_min ()));
+  printf ("max_z = %e\n", max_z);
+  fflush (stdout);
 
   grid_data *grid = m_surface->get_grid ();
   float max_w =

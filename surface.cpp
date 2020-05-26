@@ -16,29 +16,24 @@ get_triangle_pos_in_buf_by_i_j (grid_data &grid, int i, int j)
   // int pos = (i * m + j) * 6;
   // return pos;
 
-  int pos = 0;
   int n = grid.n;
   int m = grid.m;
-  if (i <= A)
+  int pos = (i * m + j);
+  //    int A = ::A+1;
+  //    int B = ::B-1;
+  if (i >= A && i < B)
     {
-      pos = i * m + j;
+      pos -= (i - A) * (B - A);
+      if (j >= A && j < B)
+        abort ();
+      pos -= j >= B ? B - A : 0;
     }
-  else if (i >= n - A - 1)
+  if (i >= B)
     {
-      //      pos = i * m + j - (n - 2 * n / HOLE_SIZE) * (m - 2 * m /
-      //      HOLE_SIZE);
-      pos = (i + 1 - (n - 2 * A)) * m + (n - 1 - 2 * A) * (1 + 2 * A) + j;
-      //      pos = (i - (n - 2 * n / HOLE_SIZE)) * m + (n - 2 * n / HOLE_SIZE)
-      //      * (2 * m / HOLE_SIZE) + j;
+      pos -= (B - A) * (B - A);
     }
-  else
-    {
-      // pos = 0;
-      pos = (A + 1) * m + (1 + 2 * A) * (i - (1 + A)) + j;
-      if (j >= m - A)
-        pos -= (m - 1 - 2 * A);
-      // pos -= (-1 + 2 * m / HOLE_SIZE);
-    }
+  //  printf ("for ij=(%d, %d) pos = %d\n", i, j, pos);
+  //  fflush (stdout);
   return pos * 6;
 }
 
@@ -94,6 +89,8 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
       ratio = (RESOLUTION * 1.) / grid.m;
       m_grid.m = grid.m * (int)(pow (2., ceil (log2 (ratio))));
     }
+  m_grid.n = 512;
+  m_grid.m = 512;
   update_scretch (m_grid.n);
 
   point_numb = get_matrix_size (m_grid.n, m_grid.m);
@@ -114,11 +111,53 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
     {
       for (int j = 0; j < m; j++)
         {
+          dx_i = r1 / m_grid.n;
+          dy_i = 0. / m_grid.m;
+          dx_j = 0. / m_grid.n;
+          dy_j = r2 / m_grid.m;
           double new_x, new_y;
 
           float x = i * dx_i + j * dx_j;
           float y = i * dy_i + j * dy_j;
 
+          if (i == A - 1)
+            {
+              dx_i += A_s;
+            }
+          if (j == A - 1)
+            {
+              dy_j += A_s;
+            }
+          if (i == A)
+            {
+              dx_i -= A_s;
+              x += A_s;
+            }
+          if (j == A)
+            {
+              dy_j -= A_s;
+              y += A_s;
+            }
+
+
+          if (i == B - 1)
+            {
+              dx_i -= B_s;
+            }
+          if (j == B - 1)
+            {
+              dy_j -= B_s;
+            }
+          if (i == B)
+            {
+              dx_i += B_s;
+              x -= B_s;
+            }
+          if (j == B)
+            {
+              dy_j += B_s;
+              y -= B_s;
+            }
           translate_tetragon (x, y, new_x, new_y, m_grid.revJacobi);
           f0 = (float)f (new_x, new_y);
           translate_tetragon (x + dx_i, y + dy_i, new_x, new_y,
@@ -132,7 +171,7 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
           f3 = (float)f (new_x, new_y);
 
           //
-          if (i > A && i < (n - A) - 1 && j > A && j < (m - A) - 1)
+          if (i >= A && i < B && j >= A && j < B)
             {
               continue;
             }

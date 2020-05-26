@@ -34,18 +34,56 @@ void fill_surface_with_vals (surface *buf_surface, grid_data &grid_calc, int p, 
   int m_calc = grid_calc.m;
 
 
-  float dx = 1. / n;
-  float dy = 1. / m;
+  double dx = 1. / n;
+  double dy = 1. / m;
   QVector4D vec;
   for (int l = i1; l <= i2; l++)
     {
+      dx = 1. / n;
+      dy = 1. / m;
       int i, j;
       get_i_j_by_index (l, i, j, n, m);
       if (j >= m || i >= n)
         continue;
-      float x = i * dx;
-      float y = j * dy;
+      double x = i * dx;
+      double y = j * dy;
+      if (i == A - 1)
+        {
+          dx += A_s;
+        }
+      if (j == A - 1)
+        {
+          dy += A_s;
+        }
+      if (i == A)
+        {
+          dx -= A_s;
+          x += A_s;
+        }
+      if (j == A)
+        {
+          dy -= A_s;
+          y += A_s;
+        }
 
+      if (i == B - 1)
+        {
+          dx -= B_s;
+        }
+      if (j == B - 1)
+        {
+          dy -= B_s;
+        }
+      if (i == B)
+        {
+          dx += B_s;
+          x -= B_s;
+        }
+      if (j == B)
+        {
+          dy += B_s;
+          y -= B_s;
+        }
       double f0, f1, f2, f3;
       get_lin_func_value (x, y, n_calc, m_calc, vals, f0);
       get_lin_func_value (x + dx, y, n_calc, m_calc, vals, f1);
@@ -53,7 +91,7 @@ void fill_surface_with_vals (surface *buf_surface, grid_data &grid_calc, int p, 
       get_lin_func_value (x, y + dy, n_calc, m_calc, vals, f3);
       if (!func)
         {
-          if (i > A && i < (n - A) - 1 && j > A && j < (m - A) - 1)
+          if (i >= A && i < B && j >= A && j < B)
             {
               continue;
             }
@@ -74,7 +112,7 @@ void fill_surface_with_vals (surface *buf_surface, grid_data &grid_calc, int p, 
           translate_tetragon (x, y + dy, new_x, new_y, grid_calc.revJacobi);
           vec.setW (fabsf ((float) (f3 - (*func)(new_x, new_y))));
 
-          if (i > A && i < (n - A) - 1 && j > A && j < (m - A) - 1)
+          if (i >= A && i < B && j >= A && j < B)
             {
               continue;
             }
