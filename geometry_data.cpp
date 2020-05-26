@@ -7,7 +7,7 @@ geometry_data::draw (bool is_resid) const
   if (is_resid)
     glPolygonMode (GL_FRONT_AND_BACK, GL_POINT);
   else
-    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+    glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   glVertexPointer (3, GL_FLOAT, 0, m_vertices.data ());
   glNormalPointer (GL_FLOAT, 0, m_normals.data ());
   const GLuint *indices = m_faces.data ();

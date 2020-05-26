@@ -2,44 +2,48 @@
 #include <QVector4D>
 #include <cmath>
 
+#include "basic_matrix_tools.h"
+#include "geometry_data.h"
 #include "sparse_tools.h"
 #include "surface.h"
-#include "geometry_data.h"
-#include "basic_matrix_tools.h"
 
-#define RESOLUTION 150
+#define RESOLUTION 1
 
-static inline int get_triangle_pos_in_buf_by_i_j (grid_data &grid, int i, int j)
+static inline int
+get_triangle_pos_in_buf_by_i_j (grid_data &grid, int i, int j)
 {
-  //int m = grid.m;
-  //int pos = (i * m + j) * 6;
-  //return pos;
+  // int m = grid.m;
+  // int pos = (i * m + j) * 6;
+  // return pos;
 
   int pos = 0;
   int n = grid.n;
   int m = grid.m;
-  if (i <= I_MIN)
+  if (i <= A)
     {
       pos = i * m + j;
     }
-  else if (i >= n - I_MIN)
+  else if (i >= n - A - 1)
     {
-//      pos = i * m + j - (n - 2 * n / HOLE_SIZE) * (m - 2 * m / HOLE_SIZE);
-      pos = (i + 1 - (n - 2 * I_MIN)) * m + (n - 1 - 2 * I_MIN) * (1 + 2 * I_MIN) + j;
-//      pos = (i - (n - 2 * n / HOLE_SIZE)) * m + (n - 2 * n / HOLE_SIZE) * (2 * m / HOLE_SIZE) + j;
+      //      pos = i * m + j - (n - 2 * n / HOLE_SIZE) * (m - 2 * m /
+      //      HOLE_SIZE);
+      pos = (i + 1 - (n - 2 * A)) * m + (n - 1 - 2 * A) * (1 + 2 * A) + j;
+      //      pos = (i - (n - 2 * n / HOLE_SIZE)) * m + (n - 2 * n / HOLE_SIZE)
+      //      * (2 * m / HOLE_SIZE) + j;
     }
   else
     {
-      //pos = 0;
-      pos = (I_MIN + 1) * m + (1 + 2 * I_MIN) * (i - (1 + I_MIN)) + j;
-      if (j >= m - I_MIN)
-        pos -= (m - 1 - 2 * I_MIN);
-        //pos -= (-1 + 2 * m / HOLE_SIZE);
+      // pos = 0;
+      pos = (A + 1) * m + (1 + 2 * A) * (i - (1 + A)) + j;
+      if (j >= m - A)
+        pos -= (m - 1 - 2 * A);
+      // pos -= (-1 + 2 * m / HOLE_SIZE);
     }
   return pos * 6;
 }
 
-void surface::update_ij (int i, int j, QVector4D &vals)
+void
+surface::update_ij (int i, int j, QVector4D &vals)
 {
   QVector3D *a, *b, *c;
   int pos = get_triangle_pos_in_buf_by_i_j (m_grid, i, j);
@@ -66,7 +70,7 @@ void surface::update_ij (int i, int j, QVector4D &vals)
   *(m_geom_ptr->normal_at (pos + 5)) = normal;
 }
 
-surface::surface (const grid_data &grid, func2d &f): m_grid (grid)
+surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
 {
   m_geom_ptr = new geometry_data ();
 
@@ -78,7 +82,7 @@ surface::surface (const grid_data &grid, func2d &f): m_grid (grid)
   else
     {
       ratio = (RESOLUTION * 1.) / grid.n;
-      m_grid.n = grid.n * (int) (pow (2., ceil (log2 (ratio))));
+      m_grid.n = grid.n * (int)(pow (2., ceil (log2 (ratio))));
     }
 
   if (grid.m > RESOLUTION)
@@ -88,14 +92,16 @@ surface::surface (const grid_data &grid, func2d &f): m_grid (grid)
   else
     {
       ratio = (RESOLUTION * 1.) / grid.m;
-      m_grid.m = grid.m * (int) (pow (2., ceil (log2 (ratio))));
+      m_grid.m = grid.m * (int)(pow (2., ceil (log2 (ratio))));
     }
+  update_scretch (m_grid.n);
 
   point_numb = get_matrix_size (m_grid.n, m_grid.m);
-  //point_numb = (m_grid.m + 1) * (m_grid.n + 1) - (m_grid.n - 1 - 2 * m_grid.n / HOLE_SIZE) * (m_grid.m - 1 - 2 * m_grid.m / HOLE_SIZE);
+  // point_numb = (m_grid.m + 1) * (m_grid.n + 1) - (m_grid.n - 1 - 2 * m_grid.n
+  // / HOLE_SIZE) * (m_grid.m - 1 - 2 * m_grid.m / HOLE_SIZE);
 
-  double r1 = std::max (fabs (grid.u.x()), fabs (grid.C.x()));
-  double r2 = std::max (fabs (grid.v.y()), fabs (grid.C.y()));
+  double r1 = std::max (fabs (grid.u.x ()), fabs (grid.C.x ()));
+  double r2 = std::max (fabs (grid.v.y ()), fabs (grid.C.y ()));
   float dx_i = r1 / m_grid.n;
   float dy_i = 0. / m_grid.m;
   float dx_j = 0. / m_grid.n;
@@ -114,16 +120,19 @@ surface::surface (const grid_data &grid, func2d &f): m_grid (grid)
           float y = i * dy_i + j * dy_j;
 
           translate_tetragon (x, y, new_x, new_y, m_grid.revJacobi);
-          f0 = (float) f (new_x, new_y);
-          translate_tetragon (x + dx_i, y + dy_i, new_x, new_y, m_grid.revJacobi);
-          f1 = (float) f (new_x, new_y);
-          translate_tetragon (x + dx_i + dx_j, y + dy_i + dy_j, new_x, new_y, m_grid.revJacobi);
-          f2 = (float) f (new_x, new_y);
-          translate_tetragon (x + dx_j, y + dy_j, new_x, new_y, m_grid.revJacobi);
-          f3 = (float) f (new_x, new_y);
+          f0 = (float)f (new_x, new_y);
+          translate_tetragon (x + dx_i, y + dy_i, new_x, new_y,
+                              m_grid.revJacobi);
+          f1 = (float)f (new_x, new_y);
+          translate_tetragon (x + dx_i + dx_j, y + dy_i + dy_j, new_x, new_y,
+                              m_grid.revJacobi);
+          f2 = (float)f (new_x, new_y);
+          translate_tetragon (x + dx_j, y + dy_j, new_x, new_y,
+                              m_grid.revJacobi);
+          f3 = (float)f (new_x, new_y);
 
           //
-          if (i > I_MIN && i < (n - I_MIN) && j > I_MIN && j < (m - I_MIN))
+          if (i > A && i < (n - A) - 1 && j > A && j < (m - A) - 1)
             {
               continue;
             }
@@ -136,7 +145,7 @@ surface::surface (const grid_data &grid, func2d &f): m_grid (grid)
               is_first = false;
             }
 
-          for (float fi: {f0, f1, f2, f3})
+          for (float fi : {f0, f1, f2, f3})
             {
               if (fi > max_val)
                 max_val = fi;
@@ -146,11 +155,14 @@ surface::surface (const grid_data &grid, func2d &f): m_grid (grid)
 
           translate_tetragon (x, y, new_x, new_y, m_grid.revJacobi);
           QVector3D a (new_x, new_y, f0);
-          translate_tetragon (x + dx_i, y + dy_i, new_x, new_y, m_grid.revJacobi);
+          translate_tetragon (x + dx_i, y + dy_i, new_x, new_y,
+                              m_grid.revJacobi);
           QVector3D b (new_x, new_y, f1);
-          translate_tetragon (x + dx_i + dx_j, y + dy_i + dy_j, new_x, new_y, m_grid.revJacobi);
+          translate_tetragon (x + dx_i + dx_j, y + dy_i + dy_j, new_x, new_y,
+                              m_grid.revJacobi);
           QVector3D c (new_x, new_y, f2);
-          translate_tetragon (x + dx_j, y + dy_j, new_x, new_y, m_grid.revJacobi);
+          translate_tetragon (x + dx_j, y + dy_j, new_x, new_y,
+                              m_grid.revJacobi);
           QVector3D d (new_x, new_y, f3);
           m_geom_ptr->add_triangle (a, b, c);
           m_geom_ptr->add_triangle (a, c, d);
@@ -158,7 +170,7 @@ surface::surface (const grid_data &grid, func2d &f): m_grid (grid)
     }
 }
 
-surface::surface (const surface& obj)
+surface::surface (const surface &obj)
 {
   max_val = obj.max_val;
   min_val = obj.min_val;
@@ -173,10 +185,9 @@ surface::~surface ()
     delete m_geom_ptr;
 }
 
-void surface::draw (bool is_resid)
+void
+surface::draw (bool is_resid)
 {
   if (m_geom_ptr)
     m_geom_ptr->draw (is_resid);
 }
-
-

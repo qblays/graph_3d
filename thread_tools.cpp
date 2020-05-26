@@ -20,6 +20,7 @@ static inline void split_threads (int n, int p, int k, int &i1, int &i2)
 void fill_surface_with_vals (surface *buf_surface, grid_data &grid_calc, int p, int k,
                              double *vals, func2d *func)
 {
+
   int N = buf_surface->get_point_numb ();
 
   int i1, i2;
@@ -28,14 +29,11 @@ void fill_surface_with_vals (surface *buf_surface, grid_data &grid_calc, int p, 
   grid_data *grid = buf_surface->get_grid ();
   int n = grid->n;
   int m = grid->m;
-
+  update_scretch (n);
   int n_calc = grid_calc.n;
   int m_calc = grid_calc.m;
 
-  //double r1 = std::max (fabs (grid_calc.u.x()), fabs (grid_calc.C.x()));
-  //double r2 = std::max (fabs (grid_calc.v.y()), fabs (grid_calc.C.y()));
-  //float dx = r1 / n;
-  //float dy = r2 / m;
+
   float dx = 1. / n;
   float dy = 1. / m;
   QVector4D vec;
@@ -55,24 +53,10 @@ void fill_surface_with_vals (surface *buf_surface, grid_data &grid_calc, int p, 
       get_lin_func_value (x, y + dy, n_calc, m_calc, vals, f3);
       if (!func)
         {
-          //
-          //double new_x, new_y;
-          //translate_tetragon (x, y, new_x, new_y, grid_calc.revJacobi);
-          //get_lin_func_value (new_x, new_y, n_calc, m_calc, n_cut_calc, m_cut_calc, vals, f0);
-          //translate_tetragon (x + dx, y, new_x, new_y, grid_calc.revJacobi);
-          //get_lin_func_value (new_x, new_y, n_calc, m_calc, n_cut_calc, m_cut_calc, vals, f1);
-          //translate_tetragon (x + dx, y + dy, new_x, new_y, grid_calc.revJacobi);
-          //get_lin_func_value (new_x, new_y, n_calc, m_calc, n_cut_calc, m_cut_calc, vals, f2);
-          //translate_tetragon (x, y + dy, new_x, new_y, grid_calc.revJacobi);
-          //get_lin_func_value (new_x, new_y, n_calc, m_calc, n_cut_calc, m_cut_calc, vals, f3);
-          //
-          //
-          if (i > I_MIN && i < (n - I_MIN) && j > I_MIN && j < (m - I_MIN))
+          if (i > A && i < (n - A) - 1 && j > A && j < (m - A) - 1)
             {
               continue;
             }
-          //
-
           vec.setX ((float) f0);
           vec.setY ((float) f1);
           vec.setZ ((float) f2);
@@ -90,7 +74,7 @@ void fill_surface_with_vals (surface *buf_surface, grid_data &grid_calc, int p, 
           translate_tetragon (x, y + dy, new_x, new_y, grid_calc.revJacobi);
           vec.setW (fabsf ((float) (f3 - (*func)(new_x, new_y))));
 
-          if (i > I_MIN && i < (n - I_MIN) && j > I_MIN && j < (m - I_MIN))
+          if (i > A && i < (n - A) - 1 && j > A && j < (m - A) - 1)
             {
               continue;
             }
