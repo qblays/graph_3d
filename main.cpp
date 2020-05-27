@@ -11,7 +11,7 @@ main (int argc, char *argv[])
   int n = 8, m = 8;
   std::pair<float, float> C = {1., 1.};
   float w = 0.7, h = 0.3;
-  int thread_num = 1;
+  int thread_num = 4;
   char usage_hint[1024];
   sprintf (usage_hint, "Usage: %s <n> <m> <w> <h> <C.x> <C.y> <p>\n", argv[0]);
 

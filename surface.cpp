@@ -94,8 +94,6 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
   update_scretch (m_grid.n);
 
   point_numb = get_matrix_size (m_grid.n, m_grid.m);
-  // point_numb = (m_grid.m + 1) * (m_grid.n + 1) - (m_grid.n - 1 - 2 * m_grid.n
-  // / HOLE_SIZE) * (m_grid.m - 1 - 2 * m_grid.m / HOLE_SIZE);
 
   double r1 = std::max (fabs (grid.u.x ()), fabs (grid.C.x ()));
   double r2 = std::max (fabs (grid.v.y ()), fabs (grid.C.y ()));
