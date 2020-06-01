@@ -25,25 +25,25 @@ public:
   {
     return m_geom_ptr;
   }
-  float get_max ()
+  double get_max ()
   {
     return max_val;
   }
-  float get_min ()
+  double get_min ()
   {
     return min_val;
   }
 
-  void set_max (float max)
+  void set_max (double max)
   {
     max_val = max;
   }
-  void set_min (float min)
+  void set_min (double min)
   {
     min_val = min;
   }
 
-  void update_ij (int i, int j, QVector4D &vals);
+  void update_ij (int i, int j, vector_4d &vals);
 
   void draw (bool is_resid);
 
@@ -51,8 +51,8 @@ private:
   geometry_data *m_geom_ptr;
   grid_data m_grid;
 
-  float max_val;
-  float min_val;
+  double max_val;
+  double min_val;
   int point_numb;
 };
 

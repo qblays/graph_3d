@@ -13,8 +13,14 @@ public:
   parallelogram_to_quad (double a, double b);
   static Linear_map_2d
   quad_to_parallelogram (double a, double b);
+//  std::array<double, 2>
   std::array<double, 2>
-  operator() (double x, double y);
+  operator() (double x, double y)
+  {
+    double *m = this->matrix.data ();
+    return {m[0] * x + m[1] * y, m[2] * x + m[3] * y};
+  }
+
   void
   map (double a, double b, double &q, double &w);
 };

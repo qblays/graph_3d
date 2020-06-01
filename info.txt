@@ -1,0 +1,5 @@
+# a b coordinates of right down vertex
+# a > 0, b <= a
+0.75 0.25
+# inner area coef
+0.5

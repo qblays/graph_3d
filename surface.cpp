@@ -2,9 +2,9 @@
 #include <QVector4D>
 #include <cmath>
 
-#include "basic_matrix_tools.h"
+#include "matrix_func.h"
 #include "geometry_data.h"
-#include "sparse_tools.h"
+#include "sparse_func.h"
 #include "surface.h"
 
 #define RESOLUTION 1
@@ -16,7 +16,7 @@ get_triangle_pos_in_buf_by_i_j (grid_data &grid, int i, int j)
   // int pos = (i * m + j) * 6;
   // return pos;
 
-  int n = grid.n;
+  //  int n = grid.n;
   int m = grid.m;
   int pos = (i * m + j);
   //    int A = ::A+1;
@@ -38,17 +38,17 @@ get_triangle_pos_in_buf_by_i_j (grid_data &grid, int i, int j)
 }
 
 void
-surface::update_ij (int i, int j, QVector4D &vals)
+surface::update_ij (int i, int j, vector_4d &vals)
 {
-  QVector3D *a, *b, *c;
+  vector_3d *a, *b, *c;
   int pos = get_triangle_pos_in_buf_by_i_j (m_grid, i, j);
   a = m_geom_ptr->point_at (pos);
   b = m_geom_ptr->point_at (pos + 1);
   c = m_geom_ptr->point_at (pos + 2);
-  a->setZ (vals.x ());
-  b->setZ (vals.y ());
-  c->setZ (vals.z ());
-  QVector3D normal = QVector3D::normal (*a, *b, *c);
+  a->setZ (vals.x);
+  b->setZ (vals.y);
+  c->setZ (vals.z);
+  vector_3d normal = vector_3d::normal (*a, *b, *c);
   *(m_geom_ptr->normal_at (pos + 0)) = normal;
   *(m_geom_ptr->normal_at (pos + 1)) = normal;
   *(m_geom_ptr->normal_at (pos + 2)) = normal;
@@ -56,10 +56,10 @@ surface::update_ij (int i, int j, QVector4D &vals)
   a = m_geom_ptr->point_at (pos + 3);
   b = m_geom_ptr->point_at (pos + 4);
   c = m_geom_ptr->point_at (pos + 5);
-  a->setZ (vals.x ());
-  b->setZ (vals.z ());
-  c->setZ (vals.w ());
-  normal = QVector3D::normal (*a, *b, *c);
+  a->setZ (vals.x);
+  b->setZ (vals.z);
+  c->setZ (vals.w);
+  normal = vector_3d::normal (*a, *b, *c);
   *(m_geom_ptr->normal_at (pos + 3)) = normal;
   *(m_geom_ptr->normal_at (pos + 4)) = normal;
   *(m_geom_ptr->normal_at (pos + 5)) = normal;
@@ -69,41 +69,22 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
 {
   m_geom_ptr = new geometry_data ();
 
-  double ratio;
-  if (grid.n > RESOLUTION)
-    {
-      m_grid.n = grid.n;
-    }
-  else
-    {
-      ratio = (RESOLUTION * 1.) / grid.n;
-      m_grid.n = grid.n * (int)(pow (2., ceil (log2 (ratio))));
-    }
 
-  if (grid.m > RESOLUTION)
-    {
-      m_grid.m = grid.m;
-    }
-  else
-    {
-      ratio = (RESOLUTION * 1.) / grid.m;
-      m_grid.m = grid.m * (int)(pow (2., ceil (log2 (ratio))));
-    }
-  m_grid.n = 512;
-  m_grid.m = 512;
-  update_scretch (m_grid.n);
+  m_grid.n = 64;
+  m_grid.m = 64;
+  update_stretch (m_grid.n);
 
   point_numb = get_matrix_size (m_grid.n, m_grid.m);
 
   double r1 = std::max (fabs (grid.u.x ()), fabs (grid.C.x ()));
   double r2 = std::max (fabs (grid.v.y ()), fabs (grid.C.y ()));
-  float dx_i = r1 / m_grid.n;
-  float dy_i = 0. / m_grid.m;
-  float dx_j = 0. / m_grid.n;
-  float dy_j = r2 / m_grid.m;
+  double dx_i = r1 / m_grid.n;
+  double dy_i = 0. / m_grid.m;
+  double dx_j = 0. / m_grid.n;
+  double dy_j = r2 / m_grid.m;
 
   bool is_first = true;
-  float f0, f1, f2, f3;
+  double f0, f1, f2, f3;
   int n = m_grid.n, m = m_grid.m;
   for (int i = 0; i < n; i++)
     {
@@ -115,8 +96,8 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
           dy_j = r2 / m_grid.m;
           double new_x, new_y;
 
-          float x = i * dx_i + j * dx_j;
-          float y = i * dy_i + j * dy_j;
+          double x = i * dx_i + j * dx_j;
+          double y = i * dy_i + j * dy_j;
 
           if (i == A - 1)
             {
@@ -137,7 +118,6 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
               y += A_s;
             }
 
-
           if (i == B - 1)
             {
               dx_i -= B_s;
@@ -157,16 +137,16 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
               y -= B_s;
             }
           translate_tetragon (x, y, new_x, new_y, m_grid.revJacobi);
-          f0 = (float)f (new_x, new_y);
+          f0 = f (new_x, new_y);
           translate_tetragon (x + dx_i, y + dy_i, new_x, new_y,
                               m_grid.revJacobi);
-          f1 = (float)f (new_x, new_y);
+          f1 = f (new_x, new_y);
           translate_tetragon (x + dx_i + dx_j, y + dy_i + dy_j, new_x, new_y,
                               m_grid.revJacobi);
-          f2 = (float)f (new_x, new_y);
+          f2 = f (new_x, new_y);
           translate_tetragon (x + dx_j, y + dy_j, new_x, new_y,
                               m_grid.revJacobi);
-          f3 = (float)f (new_x, new_y);
+          f3 = f (new_x, new_y);
 
           //
           if (i >= A && i < B && j >= A && j < B)
@@ -182,7 +162,7 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
               is_first = false;
             }
 
-          for (float fi : {f0, f1, f2, f3})
+          for (double fi : {f0, f1, f2, f3})
             {
               if (fi > max_val)
                 max_val = fi;
@@ -191,16 +171,16 @@ surface::surface (const grid_data &grid, func2d &f) : m_grid (grid)
             }
 
           translate_tetragon (x, y, new_x, new_y, m_grid.revJacobi);
-          QVector3D a (new_x, new_y, f0);
+          vector_3d a (new_x, new_y, f0);
           translate_tetragon (x + dx_i, y + dy_i, new_x, new_y,
                               m_grid.revJacobi);
-          QVector3D b (new_x, new_y, f1);
+          vector_3d b (new_x, new_y, f1);
           translate_tetragon (x + dx_i + dx_j, y + dy_i + dy_j, new_x, new_y,
                               m_grid.revJacobi);
-          QVector3D c (new_x, new_y, f2);
+          vector_3d c (new_x, new_y, f2);
           translate_tetragon (x + dx_j, y + dy_j, new_x, new_y,
                               m_grid.revJacobi);
-          QVector3D d (new_x, new_y, f3);
+          vector_3d d (new_x, new_y, f3);
           m_geom_ptr->add_triangle (a, b, c);
           m_geom_ptr->add_triangle (a, c, d);
         }
@@ -226,5 +206,9 @@ void
 surface::draw (bool is_resid)
 {
   if (m_geom_ptr)
-    m_geom_ptr->draw (is_resid);
+    {
+
+      m_geom_ptr->draw (is_resid);
+//      m_geom_ptr->draw_lines (is_resid);
+    }
 }

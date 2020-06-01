@@ -15,33 +15,42 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     linear_map_2d.cpp \
     main.cpp \
+    trap.cpp \
     window.cpp \
     glwidget.cpp \
     surface.cpp \
-    thread_tools.cpp \
+    threading.cpp \
     geometry_data.cpp \
-    sparse_tools.cpp \
-    basic_matrix_tools.cpp
+    sparse_func.cpp \
+    matrix_func.cpp
 
 HEADERS += \
     linear_map_2d.h \
+    vector3d_d.h \
+    vector4d_d.h \
     window.h \
     glwidget.h \
     surface.h \
-    thread_tools.h \
+    threading.h \
     global_defines.h \
     geometry_data.h \
-    sparse_tools.h \
-    basic_matrix_tools.h
+    sparse_func.h \
+    matrix_func.h
 
 CONFIG += c++1z \
-          optimize_full
-QMAKE_CXXFLAGS -= -O2
+#          optimize_full
+#QMAKE_CXXFLAGS -= -O2
 #QMAKE_CXX = clang++
 #QMAKE_LINK = clang++
 QMAKE_CXXFLAGS += -g
-
-QMAKE_CXXFLAGS += -ffast-math -Ofast -funroll-all-loops -Wextra -pedantic -Wall -Wcast-qual -march=native -lm
+#QMAKE_CXXFLAGS += -fsanitize=address
+#QMAKE_LFLAGS += -fsanitize=address
+QMAKE_CXXFLAGS += -ffast-math -Ofast -funroll-all-loops -march=native
+QMAKE_CXXFLAGS += -Wextra -pedantic -Wall -Wcast-qual \
+    -pedantic-errors -Wfloat-equal -Wpointer-arith -Wformat-security \
+    -Wmissing-format-attribute -Wformat=1 -Wwrite-strings -Wcast-align\
+    -Wno-long-long -Woverloaded-virtual -Wnon-virtual-dtor -Wcast-qual\
+    -Wno-suggest-attribute=format
 LIBS += -pthread
 
 QT += opengl

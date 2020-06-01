@@ -37,12 +37,6 @@ Linear_map_2d::quad_to_parallelogram (double a, double b)
   return Linear_map_2d (m);
 }
 
-std::array<double, 2>
-Linear_map_2d::operator() (double x, double y)
-{
-  double *m = this->matrix.data ();
-  return {m[0] * x + m[1] * y, m[2] * x + m[3] * y};
-}
 
 void
 Linear_map_2d::map (double x, double y, double &q, double &w)

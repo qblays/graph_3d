@@ -1,4 +1,4 @@
-#include "basic_matrix_tools.h"
+#include "matrix_func.h"
 #include <QPointF>
 #include <algorithm>
 #include <cmath>
@@ -151,13 +151,7 @@ translate_tetragon (double x, double y, double &new_x, double &new_y,
   new_y = (Mat[1] * x + Mat[4] * y + Mat[7]) / div;
 }
 
-void
-translate_tetragon (double x, double y, double &new_x, double &new_y,
-                    Linear_map_2d &map)
-{
-  new_x = map (x, y)[0];
-  new_y = map (x, y)[1];
-}
+
 
 void
 translate_tetragon (QPointF &p, QPointF &new_p, double *Mat)

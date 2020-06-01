@@ -11,6 +11,7 @@
 //#include <QOpenGLWindow>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
+#include "window.h"
 
 class grid_data;
 class surface;
@@ -19,9 +20,10 @@ class glwidget: public QOpenGLWidget, protected QOpenGLFunctions
 {
   Q_OBJECT
 
-  enum STATE { FUNC, RESID };
+
 
 public:
+  Window *parent;
   explicit glwidget (grid_data grid, QWidget *parent = 0);
   ~glwidget ();
 
@@ -32,6 +34,10 @@ public:
   surface* get_buf_surface_resid ()
   {
     return m_buf_surface_resid.get ();
+  }
+  surface* get_buf_surface_orig ()
+  {
+    return m_buf_surface_orig.get ();
   }
   void swap_surfaces ();
 
@@ -52,13 +58,14 @@ public slots:
   void change_curr_to_func ();
   void change_curr_to_resid ();
 
+  void change_curr_to_orig();
 private:
-  void draw_axis ();
+  void draw_axis (double c1, double c2, double c3);
   void set_gl_ortho ();
   void set_gl_ortho (double near, double far);
 
-  float m_xRot;
-  float m_yRot;
+  double m_xRot;
+  double m_yRot;
   int m_zRot;
 
   STATE m_state = FUNC;
@@ -67,16 +74,20 @@ private:
   QPoint m_mousePosition;
 
   QVector<GLuint> m_faces;
-  QVector<QVector3D> m_vertices;
-  QVector<QVector3D> m_normals;
+  QVector<vector_3d> m_vertices;
+  QVector<vector_3d> m_normals;
 
   surface *m_curr_surface;
 
   std::unique_ptr<surface> m_surface;
   std::unique_ptr<surface> m_buf_surface;
 
+
   std::unique_ptr<surface> m_surface_resid;
   std::unique_ptr<surface> m_buf_surface_resid;
+
+  std::unique_ptr<surface> m_surface_orig;
+  std::unique_ptr<surface> m_buf_surface_orig;
 };
 
 #endif // GLWIDGET_H
