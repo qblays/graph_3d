@@ -186,23 +186,21 @@ glwidget::paintGL ()
 
   glViewport ((width () - wside) / 2, (height () - side) / 2, wside, side);
   glMatrixMode (GL_MODELVIEW_MATRIX);
-  GLdouble init_mat[16] = {1., 0, 0,  0,
-                           0, 1.0, 0, 0,
-                           0,  0, 1., 0,
-                           0, 0,   0, 1.0};
+  GLdouble init_mat[16] = {1., 0, 0,  0, 0, 1.0, 0, 0,
+                           0,  0, 1., 0, 0, 0,   0, 1.0};
   glLoadMatrixd (init_mat);
-//  glLoadIdentity ();
+  //  glLoadIdentity ();
 
-  float max_z = std::max (fabs (m_curr_surface->get_max ()),
-                           fabs (m_curr_surface->get_min ()));
+  double max_z = std::max (fabs (m_curr_surface->get_max ()),
+                          fabs (m_curr_surface->get_min ()));
   MAX = max_z;
   char info_buf[1024];
   sprintf (info_buf, "%.2e", MAX);
   parent->max_info_data->setText (QString (info_buf));
   parent->update ();
-  if (max_z < 1e-10)
+  if (max_z < 1e-14)
     {
-      max_z = 1e-45;
+      max_z = 1e-14;
     }
   //  printf ("max_z = %e\n", max_z);
   //  fflush (stdout);
@@ -223,14 +221,16 @@ glwidget::paintGL ()
   double scale_coef = m_scaleCoef * double (SMALL_PAINT_AREA_SIZE) / wside;
   glRotated (m_xRot, 1.0, 0.0, 0.0);
   glRotated (m_yRot, 0.0, 1.0, 0.0);
-  glTranslated (-0.5 * scale_coef / max_w, -1 * max_z * scale_coef,
-                0.5 * scale_coef / max_h);
+  //  glTranslated (-0.5 * scale_coef / max_w, -1 * max_z * scale_coef,
+  //                0.5 * scale_coef / max_h);
   glRotatef (-90, 1, 0, 0);
   //  glTranslated (0, 0, -max_z / 20);
-//  printf ("%e %e\n", scale_coef / max_z, max_z * scale_coef);
+  //  printf ("%e %e\n", scale_coef / max_z, max_z * scale_coef);
   fflush (stdout);
   draw_axis (scale_coef / max_w, scale_coef / max_h, scale_coef / max_z);
-  glScaled (scale_coef / max_w, scale_coef / max_h, scale_coef / max_z);
+//  glScaled (scale_coef / max_w, scale_coef / max_h, scale_coef / max_z);
+  vector_3d scaling = {scale_coef / max_w, scale_coef / max_h,
+                       scale_coef / max_z};
 
   glEnableClientState (GL_VERTEX_ARRAY);
   glEnableClientState (GL_NORMAL_ARRAY);
@@ -242,7 +242,7 @@ glwidget::paintGL ()
 
   glColor4ub (145, 17, 20, 1);
 
-  m_curr_surface->draw (m_state == RESID);
+  m_curr_surface->draw (m_state == RESID, scaling);
 
   glDisableClientState (GL_VERTEX_ARRAY);
   glDisableClientState (GL_NORMAL_ARRAY);
@@ -291,10 +291,8 @@ void
 glwidget::set_gl_ortho ()
 {
   glMatrixMode (GL_PROJECTION);
-  GLdouble init_mat[16] = {1., 0, 0,  0,
-                           0, 1.0, 0, 0,
-                           0,  0, 1., 0,
-                           0, 0,   0, 1.0};
+  GLdouble init_mat[16] = {1., 0, 0,  0, 0, 1.0, 0, 0,
+                           0,  0, 1., 0, 0, 0,   0, 1.0};
   glLoadMatrixd (init_mat);
   glOrtho (-1, 1, -1, 1, -10, 10);
   //  glFrustum(-2, 2, -2, 2, -2000, 2000);
@@ -306,10 +304,8 @@ glwidget::set_gl_ortho (double near, double far)
 {
   //  glMatrixMode (GL_PROJECTION);
   glMatrixMode (GL_MODELVIEW);
-  GLdouble init_mat[16] = {1., 0, 0,  0,
-                           0, 1.0, 0, 0,
-                           0,  0, 1., 0,
-                           0, 0,   0, 1.0};
+  GLdouble init_mat[16] = {1., 0, 0,  0, 0, 1.0, 0, 0,
+                           0,  0, 1., 0, 0, 0,   0, 1.0};
   glLoadMatrixd (init_mat);
   glOrtho (-2, 2, -2, 2, near, far);
   //  glMatrixMode (GL_MODELVIEW);

@@ -45,7 +45,7 @@ public:
 
   void update_ij (int i, int j, vector_4d &vals);
 
-  void draw (bool is_resid);
+  void draw (bool is_resid, vector_3d scaling);
 
 private:
   geometry_data *m_geom_ptr;

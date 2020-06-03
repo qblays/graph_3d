@@ -38,7 +38,7 @@ HEADERS += \
     matrix_func.h
 
 CONFIG += c++1z \
-#          optimize_full
+          optimize_full
 #QMAKE_CXXFLAGS -= -O2
 #QMAKE_CXX = clang++
 #QMAKE_LINK = clang++

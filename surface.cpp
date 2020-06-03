@@ -203,12 +203,12 @@ surface::~surface ()
 }
 
 void
-surface::draw (bool is_resid)
+surface::draw (bool is_resid, vector_3d scaling)
 {
   if (m_geom_ptr)
     {
 
-      m_geom_ptr->draw (is_resid);
+      m_geom_ptr->draw (is_resid, scaling);
 //      m_geom_ptr->draw_lines (is_resid);
     }
 }

@@ -30,6 +30,18 @@ struct vector_3d
     return sqrt (x * x + y * y + z * z);
   }
   void
+  mult (vector_3d &a)
+  {
+    x *= a.x;
+    y *= a.y;
+    z *= a.z;
+  }
+  static vector_3d
+  mult (vector_3d &a, vector_3d &b)
+  {
+    return {a.x * b.x, a.y * b.y, a.z * b.z};
+  }
+  void
   setZ (double z)
   {
     this->z = z;
